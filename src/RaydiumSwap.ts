@@ -33,6 +33,20 @@ class RaydiumSwap {
     this.wallet = new Wallet(Keypair.fromSecretKey(Uint8Array.from(bs58.decode(WALLET_PRIVATE_KEY))))
   }
 
+   /**
+   * Loads all the pool keys available from a JSON configuration file.
+   * @async
+   * @returns {Promise<void>}
+   */
+  async loadPoolKeys(liquidityFile: string) {
+    const liquidityJsonResp = await fetch(liquidityFile);
+    if (!liquidityJsonResp.ok) return
+    const liquidityJson = (await liquidityJsonResp.json()) as { official: any; unOfficial: any }
+    const allPoolKeysJson = [...(liquidityJson?.official ?? []), ...(liquidityJson?.unOfficial ?? [])]
+
+    this.allPoolKeysJson = allPoolKeysJson
+  }
+
     /**
    * Finds pool information for the given token pair.
    * @param {string} mintA - The mint address of the first token.
